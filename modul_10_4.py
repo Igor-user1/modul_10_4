@@ -27,25 +27,18 @@ class Cafe:
         self.queue = Queue()
 
     def guest_arrival(self, *guests):
-        if len(guests) == len(tables):
-            for guest, table in guests, tables:
-                table.guest = guest
-                print(f'{guest.name} сел(-а) за стол номер {table.number})')
-                guest.start()
-        elif len(guests) < len(tables):
-            for i in range(len(guests)):
-                tables[i].guest = guests[i]
-                print(f'{guests[i].name} сел(-а) за стол номер {tables[i].number}')
-                guests[i].start()
-        else:
-            guests = list(guests)
-            for j in range(len(tables)):
-                tables[j].guest = guests[j]
-                print(f'{guests[j].name} сел(-а) за стол номер {tables[j].number}')
-                guests[j].start()
-            for k in range(len(tables), len(guests)):
-                self.queue.put(guests[k])
-                print(f"{guests[k].name} в очереди")
+        for guest in guests:
+            free_table = len(tables)
+            for table in tables:
+                if table.guest is None:
+                    table.guest = guest
+                    print(f'{guest.name} сел(-а) за стол номер {table.number}')
+                    guest.start()
+                    break
+                free_table -= 1
+            if free_table == 0:
+                self.queue.put(guest)
+                print(f"{guest.name} в очереди")
 
     def discuss_guests(self):
         while not self.queue.empty() and [tables[i].guest is None for i in range(len(tables))]:
